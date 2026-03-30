@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X_Marsh | Premium Courses</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff0055;
+            --secondary: #7000ff;
+            --bg: #050505;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 20% 30%, #1a0b2e 0%, #050505 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        .nav-links span {
+            margin-left: 25px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-links span:hover {
+            color: var(--primary);
+        }
+
+        /* Page Management */
+        .page {
+            display: none;
+            padding: 60px 20px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        /* Course Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .box {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .box:hover {
+            transform: translateY(-15px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(255, 0, 85, 0.2);
+        }
+
+        .module-label {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+        }
+
+        h3 {
+            margin: 15px 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            min-height: 50px;
+        }
+
+        /* Like & Dislike Section */
+        .interaction {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .like-btn,
+        .dislike-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .like-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .dislike-btn:hover {
+            background: #333;
+        }
+
+        .watch-btn {
+            display: inline-block;
+            padding: 14px 0;
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(112, 0, 255, 0.3);
+        }
+
+        .watch-btn:hover {
+            filter: brightness(1.2);
+            letter-spacing: 1px;
+        }
+
+        /* About Page Styling */
+        .about-card {
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .about-card h2 {
+            color: var(--primary);
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .about-card p {
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo" onclick="showPage('home')">X_Marsh</div>
+        <div class="nav-links">
+            <span onclick="showPage('home')">Courses</span>
+            <span onclick="showPage('about')">About Us</span>
+        </div>
+    </nav>
+
+    <section id="home-page" class="page active">
+        <h1>Course Dashboard</h1>
+        <div class="grid" id="courseGrid"></div>
+    </section>
+
+    <section id="about-page" class="page">
+        <h1>About Us</h1>
+        <div class="about-card">
+            <h2>Who is X_Marsh?</h2>
+            <p>X_Marsh is a premium content creation agency dedicated to teaching the art of viral storytelling and
+                high-end video editing. We turn beginners into masters of the digital landscape.</p>
+
+            <h2>Our Offer</h2>
+            <p>From CapCut fundamentals to advanced cinematic techniques, our 10-module curriculum is built to help you
+                dominate platforms like TikTok, Reels, and YouTube.</p>
+
+            <h2>Contact</h2>
+            <p>Have questions? Reach out to our team at <strong>contact@xmarsh.com</strong> or follow us on social media
+                for daily tips.</p>
+        </div>
+    </section>
+
+    <script>
+        // PAGE TOGGLE FUNCTION
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId + '-page').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // COURSE DATA
+        const myCourses = [
+            { name: "Introduction To Capcut", url: "https://youtu.be/ulcyc8yD2Bo?si=r_bVIizvPHyncKsk", likes: 12 },
+            { name: "Mobile Editing Mastery", url: "#", likes: 0 },
+            { name: "Adding Transitions", url: "#", likes: 0 },
+            { name: "Color Grading Secrets", url: "#", likes: 0 },
+            { name: "Keyframe Animation", url: "#", likes: 0 },
+            { name: "Advanced Text Effects", url: "#", likes: 0 },
+            { name: "Audio & Music Syncing", url: "#", likes: 0 },
+            { name: "Green Screen Techniques", url: "#", likes: 0 },
+            { name: "Exporting for Social Media", url: "#", likes: 0 },
+            { name: "Final Project Walkthrough", url: "#", likes: 0 }
+        ];
+
+        const grid = document.getElementById('courseGrid');
+
+        // GENERATE COURSE BOXES
+        myCourses.forEach((course, index) => {
+            const box = document.createElement('div');
+            box.className = 'box';
+            const num = (index + 1).toString().padStart(2, '0');
+
+            box.innerHTML = `
+                <div>
+                    <div class="module-label">MODULE ${num}</div>
+                    <h3>${course.name}</h3>
+                </div>
+                
+                <div class="interaction">
+                    <button class="like-btn" onclick="addLike(${index}, this)">👍 <span class="count">${course.likes}</span></button>
+                    <button class="dislike-btn">👎</button>
+                </div>
+
+                <a href="${course.url}" target="_blank" class="watch-btn">WATCH NOW</a>
+            `;
+            grid.appendChild(box);
+        });
+
+        // LIKE LOGIC
+        function addLike(index, btn) {
+            myCourses[index].likes++;
+            btn.querySelector('.count').innerText = myCourses[index].likes;
+            btn.style.background = "var(--primary)";
+            btn.style.transform = "scale(1.1)";
+            setTimeout(() => btn.style.transform = "scale(1)", 200);
+        }
+    </script>
+</body>
+
+</html>
