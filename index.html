@@ -255,51 +255,80 @@
         </div>
     </section>
 
-    <script>
+   <script>
         // PAGE TOGGLE FUNCTION
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId + '-page').classList.add('active');
+            const target = document.getElementById(pageId + '-page');
+            if(target) target.classList.add('active');
             window.scrollTo(0, 0);
         }
+
+        // ENCRYPTED KEYS (These represent your codes: x_marsh_1m and x_marsh_2m)
+        const VALID_KEYS = ["eF9tYXJzaF8xbQ==", "eF9tYXJzaF8ybQ=="];
 
         // COURSE DATA
         const myCourses = [
             { name: "Introduction To Capcut", url: "https://youtu.be/SZPswpuvyl4?si=W8cY0byOc59PLD3k", likes: 5 },
             { name: "Text and introduction to Green screen", url: "https://youtu.be/w-742mxKkNU?si=UdMGo0wqSR9zs_hk", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 },
-            { name: "loading...", url: "#", likes: 0 }
+            { name: "Advanced Transitions", url: "https://youtu.be/example1", likes: 0 },
+            { name: "Color Grading Masterclass", url: "https://youtu.be/example2", likes: 0 },
+            { name: "Viral Hook Secrets", url: "https://youtu.be/example3", likes: 0 },
+            { name: "Audio Engineering", url: "https://youtu.be/example4", likes: 0 },
+            { name: "Monetization Guide", url: "https://youtu.be/example5", likes: 0 },
+            { name: "Client Acquisition", url: "https://youtu.be/example6", likes: 0 },
+            { name: "Final Project", url: "https://youtu.be/example7", likes: 0 },
+            { name: "Bonus Resources", url: "https://youtu.be/example8", likes: 0 }
         ];
 
         const grid = document.getElementById('courseGrid');
 
-        // GENERATE COURSE BOXES
-        myCourses.forEach((course, index) => {
-            const box = document.createElement('div');
-            box.className = 'box';
-            const num = (index + 1).toString().padStart(2, '0');
+        function renderCourses() {
+            grid.innerHTML = ''; // Clear grid
+            const isPremiumUser = localStorage.getItem('xm_access') === 'true';
 
-            box.innerHTML = `
-                <div>
-                    <div class="module-label">MODULE ${num}</div>
-                    <h3>${course.name}</h3>
-                </div>
-                
-                <div class="interaction">
-                    <button class="like-btn" onclick="addLike(${index}, this)">👍 <span class="count">${course.likes}</span></button>
-                    <button class="dislike-btn">👎</button>
-                </div>
+            myCourses.forEach((course, index) => {
+                const isLocked = index >= 2 && !isPremiumUser;
+                const box = document.createElement('div');
+                box.className = 'box';
+                const num = (index + 1).toString().padStart(2, '0');
 
-                <a href="${course.url}" target="_blank" class="watch-btn">WATCH NOW</a>
-            `;
-            grid.appendChild(box);
-        });
+                box.innerHTML = `
+                    <div>
+                        <div class="module-label">${isLocked ? 'PREMIUM' : 'MODULE ' + num}</div>
+                        <h3>${isLocked ? 'Locked Content' : course.name}</h3>
+                    </div>
+                    
+                    <div class="interaction">
+                        <button class="like-btn" onclick="addLike(${index}, this)">👍 <span class="count">${course.likes}</span></button>
+                        <button class="dislike-btn">👎</button>
+                    </div>
+
+                    ${isLocked 
+                        ? `<button onclick="unlockContent()" class="watch-btn" style="background: #333; cursor:pointer;">🔓 UNLOCK MODULE</button>` 
+                        : `<a href="${course.url}" target="_blank" class="watch-btn">WATCH NOW</a>`
+                    }
+                `;
+                grid.appendChild(box);
+            });
+        }
+
+        // UNLOCK LOGIC
+        function unlockContent() {
+            const code = prompt("Please enter your Student Passcode to access Premium Modules:");
+            if (!code) return;
+
+            // Scramble the entered code to check against our list
+            const hashedInput = btoa(code);
+
+            if (VALID_KEYS.includes(hashedInput)) {
+                alert("Access Granted! Welcome to the Premium Course.");
+                localStorage.setItem('xm_access', 'true');
+                renderCourses(); // Refresh the UI
+            } else {
+                alert("Invalid code. Please contact @t4t4t2 on Telegram to purchase access.");
+            }
+        }
 
         // LIKE LOGIC
         function addLike(index, btn) {
@@ -309,6 +338,9 @@
             btn.style.transform = "scale(1.1)";
             setTimeout(() => btn.style.transform = "scale(1)", 200);
         }
+
+        // Initialize
+        renderCourses();
     </script>
 </body>
 
