@@ -44,95 +44,76 @@
         <div class="grid" id="courseGrid"></div>
     </section>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script>
+        // Your specific Supabase credentials
+        const SUPABASE_URL = 'https://vndrvffgpzxffufuljbi.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZuZHJ2ZmZncHp4ZmZ1ZnVsamJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MDI3MzAsImV4cCI6MjA5MTA3ODczMH0.Dbs7eb5vdDygs-QsG_Y_-KRQxlLWTe3_t42hdGcLKTY';
 
-        // Your exact config from the screenshot
-        const firebaseConfig = {
-            apiKey: "AIzaSyAGTr0n5w9AtmWvwI2birctlGeFZB0OSxY",
-            authDomain: "x-marsh-academy.firebaseapp.com",
-            projectId: "x-marsh-academy",
-            storageBucket: "x-marsh-academy.firebasestorage.app",
-            messagingSenderId: "488318989587",
-            appId: "1:488318989587:web:e1cac3089b135d2aff16e6",
-            measurementId: "G-6MQ58VSYX4"
-        };
+        // Initialize the Supabase client
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        const myCourses = [
-            { name: "Introduction To Capcut", url: "https://youtu.be/SZPswpuvyl4" },
-            { name: "Text & Green Screen", url: "https://youtu.be/w-742mxKkNU" },
-            { name: "Advanced Transitions (Premium)", url: "https://youtu.be/ExampleLink1" },
-            { name: "Color Grading Masterclass (Premium)", url: "https://youtu.be/ExampleLink2" },
-            { name: "Viral Storytelling (Premium)", url: "https://youtu.be/ExampleLink3" },
-            { name: "Client Hunting (Premium)", url: "https://youtu.be/ExampleLink4" }
+        const courses = [
+            { name: "Intro to Capcut", url: "https://youtu.be/SZPswpuvyl4" },
+            { name: "Green Screen Secrets", url: "https://youtu.be/w-742mxKkNU" },
+            { name: "Pro Editing (Premium)", url: "https://youtu.be/locked1" },
+            { name: "Viral Growth (Premium)", url: "https://youtu.be/locked2" }
         ];
 
-        const authBtn = document.getElementById('auth-btn');
-        const userPhoto = document.getElementById('user-photo');
-        const statusLabel = document.getElementById('status-label');
-        const grid = document.getElementById('courseGrid');
-
-        authBtn.onclick = () => {
-            if(auth.currentUser) { signOut(auth); } 
-            else { signInWithPopup(auth, provider).catch(err => alert("Error: Make sure Google Login is enabled in Firebase!")); }
-        };
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                authBtn.innerText = "Logout";
-                userPhoto.src = user.photoURL;
-                userPhoto.style.display = "block";
-                
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
-                
-                let isPremium = false;
-                if (userSnap.exists()) {
-                    isPremium = userSnap.data().isPremium;
-                } else {
-                    await setDoc(userRef, { email: user.email, isPremium: false });
-                }
-
-                statusLabel.innerText = isPremium ? "💎 PREMIUM ACCOUNT ACTIVE" : "🆓 FREE ACCOUNT (Contact @t4t4t2 to Upgrade)";
-                statusLabel.style.color = isPremium ? "#00ff88" : "#aaa";
-                renderCourses(isPremium);
+        async function login() {
+            const email = prompt("Enter your email to get a login link:");
+            if (!email) return;
+            // Sends a Magic Link to the user's email
+            const { error } = await supabaseClient.auth.signInWithOtp({ email });
+            if (error) {
+                alert("Error: " + error.message);
             } else {
-                authBtn.innerText = "Login with Google";
-                userPhoto.style.display = "none";
-                statusLabel.innerText = "Login to see your status";
-                statusLabel.style.color = "#ff0055";
-                renderCourses(false);
+                alert("Success! Check your email inbox for the magic login link.");
             }
-        });
-
-        function renderCourses(isPremium) {
-            grid.innerHTML = '';
-            myCourses.forEach((course, index) => {
-                const isLocked = index >= 2 && !isPremium;
-                const box = document.createElement('div');
-                box.className = 'box';
-                const num = (index + 1).toString().padStart(2, '0');
-
-                box.innerHTML = `
-                    <div>
-                        <div class="module-label">${isLocked ? 'LOCKED' : 'MODULE ' + num}</div>
-                        <h3>${isLocked ? "Premium Access Required" : course.name}</h3>
-                    </div>
-                    ${isLocked 
-                        ? `<button class="watch-btn locked-btn">🔒 UPGRADE TO UNLOCK</button>` 
-                        : `<a href="${course.url}" target="_blank" class="watch-btn">WATCH NOW</a>`
-                    }
-                `;
-                grid.appendChild(box);
-            });
         }
+
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                document.getElementById('login-btn').innerText = "Logout";
+                document.getElementById('login-btn').onclick = () => supabaseClient.auth.signOut().then(() => location.reload());
+                
+                // Checks the 'profiles' table for premium status
+                let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                
+                if (!profile) {
+                    // Creates a new profile if it's the user's first time
+                    await supabaseClient.from('profiles').insert([{ id: user.id, email: user.email, is_premium: false }]);
+                    render(false);
+                } else {
+                    render(profile.is_premium);
+                }
+            } else {
+                render(false);
+            }
+        }
+
+        function render(isPremium) {
+            const grid = document.getElementById('courseGrid');
+            const status = document.getElementById('status');
+            status.innerText = isPremium ? "💎 PREMIUM ACTIVE" : "🆓 FREE MEMBER";
+            
+            grid.innerHTML = courses.map((c, i) => {
+                const locked = i >= 2 && !isPremium;
+                return `
+                    <div class="box">
+                        <div class="module-label">${locked ? 'LOCKED' : 'MODULE 0' + (i + 1)}</div>
+                        <h3>${locked ? "Premium Access Required" : c.name}</h3>
+                        ${locked 
+                            ? `<div class="watch-btn locked">PAY TO UNLOCK</div>` 
+                            : `<a href="${c.url}" target="_blank" class="watch-btn">WATCH NOW</a>`
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Run the user check as soon as the page loads
+        checkUser();
     </script>
 </body>
 </html>
