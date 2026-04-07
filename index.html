@@ -42,13 +42,9 @@
         <p id="status-label" style="margin-bottom: 20px; color: #ff0055; font-weight: 600;">Please Login to Access Courses</p>
         <div class="grid" id="courseGrid"></div>
     </section>
-
-    <script>
-        // Your specific Supabase credentials
+<script>
         const SUPABASE_URL = 'https://vndrvffgpzxffufuljbi.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZuZHJ2ZmZncHp4ZmZ1ZnVsamJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MDI3MzAsImV4cCI6MjA5MTA3ODczMH0.Dbs7eb5vdDygs-QsG_Y_-KRQxlLWTe3_t42hdGcLKTY';
-
-        // Initialize the Supabase client
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const courses = [
@@ -60,15 +56,24 @@
 
         async function handleAuth() {
             const { data: { user } } = await supabaseClient.auth.getUser();
+            
             if (user) {
                 await supabaseClient.auth.signOut();
                 location.reload();
             } else {
-                const email = prompt("Enter your email to get a login link:");
+                // Professional UI instead of a prompt
+                const email = prompt("Enter your email. We will send you a professional secure login link:");
                 if (!email) return;
-                const { error } = await supabaseClient.auth.signInWithOtp({ email });
+                
+                const { error } = await supabaseClient.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        emailRedirectTo: 'https://mandelaabdisa158-art.github.io/course/'
+                    }
+                });
+                
                 if (error) alert("Error: " + error.message);
-                else alert("Success! Check your email inbox for the magic login link.");
+                else alert("Check your email! Click the link in your inbox to enter the Academy.");
             }
         }
 
@@ -77,20 +82,17 @@
             const authBtn = document.getElementById('auth-btn');
             
             if (user) {
-                authBtn.innerText = "Logout";
-                
-                // Checks the 'profiles' table for premium status
-                let { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                authBtn.innerText = "Logout (" + user.email.split('@')[0] + ")";
+                let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
                 
                 if (!profile) {
-                    // Creates a new profile if it's the user's first time
                     await supabaseClient.from('profiles').insert([{ id: user.id, email: user.email, is_premium: false }]);
                     render(false);
                 } else {
                     render(profile.is_premium);
                 }
             } else {
-                authBtn.innerText = "Login";
+                authBtn.innerText = "Student Login";
                 render(false);
             }
         }
@@ -98,8 +100,7 @@
         function render(isPremium) {
             const grid = document.getElementById('courseGrid');
             const statusLabel = document.getElementById('status-label');
-            
-            statusLabel.innerText = isPremium ? "💎 PREMIUM ACTIVE" : "🆓 FREE MEMBER (Login for status)";
+            statusLabel.innerText = isPremium ? "💎 PREMIUM STUDENT" : "🆓 FREE ACCESS";
             
             grid.innerHTML = courses.map((c, i) => {
                 const locked = i >= 2 && !isPremium;
