@@ -1,481 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X_Marsh | Multi-Academy</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #ff0055;
-            --secondary: #7000ff;
-            --bg: #050505;
-            --card-bg: rgba(255, 255, 255, 0.05);
-        }
+        :root { --primary: #ff0055; --secondary: #7000ff; --bg: #050505; --card-bg: rgba(255, 255, 255, 0.05); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 20% 30%, #1a0b2e 0%, #050505 100%); color: white; min-height: 100vh; overflow-x: hidden; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-size: 1.8rem; font-weight: 800; color: var(--primary); cursor: pointer; letter-spacing: 2px; }
+        
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+        .page { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; }
+        h1 { font-size: 2.8rem; text-transform: uppercase; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; animation: fadeInUp 0.8s ease-out; }
 
-        body {
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at 20% 30%, #1a0b2e 0%, #050505 100%);
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        .status-pill { background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; border: 1px solid var(--primary); margin-bottom: 20px; display: inline-block; }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; max-width: 1100px; margin-top: 30px; }
+        .cat-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); padding: 40px 20px; border-radius: 20px; cursor: pointer; transition: 0.4s; animation: fadeInUp 0.8s ease-out both; }
+        .cat-card:hover { border-color: var(--primary); transform: translateY(-8px); background: rgba(255, 0, 85, 0.1); box-shadow: 0 15px 30px rgba(255, 0, 85, 0.2); }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        /* Modals */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); }
+        .modal-content { background: #111; margin: 10% auto; padding: 30px; border: 1px solid var(--primary); border-radius: 24px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 50px rgba(255,0,85,0.2); }
+        .modal input { width: 100%; padding: 15px; margin: 20px 0; border: 1px solid #333; border-radius: 12px; background: #000; color: white; font-size: 1rem; text-align: center; }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 5%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(15px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .watch-btn { display: inline-block; padding: 14px 25px; width: 100%; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; text-decoration: none; margin-top: 10px; transition: 0.3s; }
+        .watch-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary);
-            cursor: pointer;
-            letter-spacing: 2px;
-        }
+        .upgrade-banner { background: linear-gradient(90deg, #111, #222); border: 1px solid gold; padding: 20px; border-radius: 15px; margin-top: 30px; max-width: 600px; display: none; }
+        
+        .tg-link { color: #0088cc; font-weight: bold; text-decoration: none; display: block; margin-top: 15px; }
 
-        .nav-links button {
-            background: none;
-            border: 1px solid var(--primary);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .nav-links button:hover {
-            background: var(--primary);
-        }
-
-        .page {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 3rem;
-            text-transform: uppercase;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1100px;
-            margin-top: 40px;
-        }
-
-        .cat-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 50px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            animation: fadeInUp 0.8s ease-out both;
-        }
-
-        .cat-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            background: rgba(255, 0, 85, 0.1);
-            box-shadow: 0 10px 30px rgba(255, 0, 85, 0.3);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .modal-content {
-            background: #111;
-            margin: 10% auto;
-            padding: 30px;
-            border: 1px solid var(--primary);
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border: 1px solid #333;
-            border-radius: 8px;
-            background: #000;
-            color: white;
-            font-size: 1rem;
-        }
-
-        /* Pricing Card */
-        .pricing-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid var(--secondary);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 400px;
-            margin: 20px auto;
-        }
-
-        .price {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 10px 0;
-        }
-
-        /* About Section */
-        .about-section {
-            max-width: 800px;
-            margin-top: 60px;
-            padding: 40px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            line-height: 1.6;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            width: 100%;
-            max-width: 1200px;
-            margin-top: 40px;
-        }
-
-        .box {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 35px;
-            transition: 0.4s;
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        .watch-btn {
-            display: inline-block;
-            padding: 14px 25px;
-            width: 100%;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            margin-top: 15px;
-        }
-
-        .logout-btn {
-            background: none;
-            border: 1px solid #444;
-            color: #888;
-            padding: 5px 10px;
-            font-size: 0.7rem;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-
-        .items {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .item {
-            padding: 10px;
-            border: 1px solid #555;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .item:hover {
-            background: var(--primary);
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 1200px; margin-top: 30px; }
+        .box { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; text-align: left; }
     </style>
 </head>
-
 <body>
+
     <nav class="navbar">
-        <div class="logo" onclick="showHome()">X_Marsh</div>
+        <div class="logo" onclick="showHome()">X_MARSH</div>
         <div class="nav-links">
-            <button onclick="showAbout()">About Us</button>
+            <a href="#" onclick="showAbout()">About</a>
+            <a href="https://t.me/T4t4t2" target="_blank">Support</a>
         </div>
     </nav>
 
     <section class="page">
         <h1 id="main-title">X_Marsh Academy</h1>
-        <p id="status-label">Elite Skills for the Modern World</p>
+        <div id="status-pill-container"></div>
         <div id="content-area"></div>
     </section>
 
     <div id="code-modal" class="modal">
         <div class="modal-content">
-            <h2>Access Required</h2>
-            <p>Enter your secret code to unlock this course</p>
-            <input type="text" id="code-input" placeholder="Enter code here...">
-            <button class="watch-btn" onclick="validateCode()">UNLEASH ACCESS</button>
-            <button style="background:none; border:none; color:#555; cursor:pointer;"
-                onclick="closeModal()">Cancel</button>
+            <h2 id="modal-heading">Access Code</h2>
+            <p>Don't have a code? Message <a href="https://t.me/T4t4t2" target="_blank" class="tg-link">@T4t4t2</a></p>
+            <input type="text" id="code-input" placeholder="Paste Code Here">
+            <button class="watch-btn" onclick="validateCode()">UNLOCK NOW</button>
+            <button style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer;" onclick="closeModal()">Close</button>
         </div>
     </div>
 
     <div id="surprise-modal" class="modal">
         <div class="modal-content">
-            <h2>Welcome to the Team!</h2>
-            <p>We have a special surprise gift for you. What do you like?</p>
-            <div class="items">
-                <div class="item" onclick="chooseItem('⚽')">Football</div>
-                <div class="item" onclick="chooseItem('🌹')">Rose</div>
-                <div class="item" onclick="chooseItem('🚗')">Car</div>
-                <div class="item" onclick="chooseItem('🍕')">Pizza</div>
-                <div class="item" onclick="chooseItem('📱')">Phone</div>
+            <h2>🎉 Access Granted!</h2>
+            <p>One quick question: What do you love most?</p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:20px 0;">
+                <button onclick="finishLogin('⚽')" style="padding:10px; cursor:pointer;">Football</button>
+                <button onclick="finishLogin('🌹')" style="padding:10px; cursor:pointer;">Rose</button>
+                <button onclick="finishLogin('🚗')" style="padding:10px; cursor:pointer;">Cars</button>
+                <button onclick="finishLogin('🎮')" style="padding:10px; cursor:pointer;">Gaming</button>
             </div>
-            <div id="emoji-display" style="font-size: 4rem; margin: 20px;"></div>
-            <button class="watch-btn" onclick="finishLogin()">Continue to Course</button>
+            <div id="emoji-result" style="font-size:3rem;"></div>
         </div>
     </div>
 
     <script>
-        // Security: These codes are used once.
-        const trialCodes = ['djhd37', 'djhd36', 'djhd35', 'djhd34', 'djhd33', 'djhd32', 'djhd31', 'djhd30'];
-        const premiumCodes = ['djfhd37', 'djhgd36', 'djhyd35', 'djhtd34', 'djhrd33', 'djhsd32', 'djkhd31', 'djihd30'];
+        // EXPANDED PASSCODES
+        const trialCodes = ['djhd37', 'djhd36', 'djhd35', 'djhd34', 'djhd33', 'djhd32', 'djhd31', 'djhd30', 'xm-trial-01', 'xm-trial-02', 'xm-trial-03', 'xm-trial-04', 'xm-trial-05', 'xm-trial-06', 'xm-trial-07', 'xm-trial-08', 'xm-trial-09', 'xm-trial-10'];
+        const premiumCodes = ['djfhd37', 'djhgd36', 'djhyd35', 'djhtd34', 'djhrd33', 'djhsd32', 'djkhd31', 'djihd30', 'xm-prem-v01', 'xm-prem-v02', 'xm-prem-v03', 'xm-prem-v04', 'xm-prem-v05', 'xm-prem-v06', 'xm-prem-v07', 'xm-prem-v08', 'xm-prem-v09', 'xm-prem-v10'];
 
         const courseData = {
-            editing: {
-                title: "Video Editing", videos: [
-                    { name: "Intro to Capcut", url: "https://youtu.be/SZPswpuvyl4" },
-                    { name: "Green Screen Secrets", url: "https://youtu.be/w-742mxKkNU" },
-                    { name: "Pro Effects (Premium)", url: "#" },
-                    { name: "Color Grading (Premium)", url: "#" }
-                ]
-            },
-            trading: {
-                title: "Trading Strategy", videos: [
-                    { name: "Market Basics", url: "https://youtu.be/basics" },
-                    { name: "Candlestick 101", url: "https://youtu.be/candles" },
-                    { name: "Whale Tactics (Premium)", url: "#" }
-                ]
-            },
-            ai: {
-                title: "AI Mastery", videos: [
-                    { name: "Prompt Engineering", url: "https://youtu.be/prompt" },
-                    { name: "AI Video Tools", url: "https://youtu.be/aitools" },
-                    { name: "Automation (Premium)", url: "#" }
-                ]
-            },
-            youtube: {
-                title: "YT Automation", videos: [
-                    { name: "Niche Research", url: "https://youtu.be/niche" },
-                    { name: "Script Workflow", url: "https://youtu.be/script" },
-                    { name: "Scaling (Premium)", url: "#" }
-                ]
-            },
-            canva: {
-                title: "Canva Masterclass", videos: [
-                    { name: "Design Fundamentals", url: "#" },
-                    { name: "Social Media Graphics", url: "#" },
-                    { name: "Brand Identity (Premium)", url: "#" },
-                    { name: "Pro Mockups (Premium)", url: "#" }
-                ]
-            }
-        };
-
-        // Check for existing login on load
-        window.onload = function () {
-            const savedUser = localStorage.getItem('marsh_user_type');
-            if (savedUser) {
-                showHome();
-            } else {
-                showHome();
-            }
+            editing: { title: "Video Editing", videos: [{name: "Intro", url:"#"}, {name: "Effects", url:"#"}, {name: "Mastery (P)", url:"#"}] },
+            trading: { title: "Trading Strategy", videos: [{name: "Basics", url:"#"}, {name: "Analysis", url:"#"}, {name: "Pro Secrets (P)", url:"#"}] },
+            ai: { title: "AI Mastery", videos: [{name: "Prompts", url:"#"}, {name: "Tools", url:"#"}, {name: "Automation (P)", url:"#"}] },
+            youtube: { title: "YT Automation", videos: [{name: "Niches", url:"#"}, {name: "Scripts", url:"#"}, {name: "Growth (P)", url:"#"}] },
+            canva: { title: "Canva Pro", videos: [{name: "Design 101", url:"#"}, {name: "Elements", url:"#"}, {name: "Branding (P)", url:"#"}] }
         };
 
         function showHome() {
-            document.getElementById('main-title').innerText = "X_Marsh Academy";
             const userType = localStorage.getItem('marsh_user_type');
-            document.getElementById('status-label').innerText = userType ? `Logged in as ${userType.toUpperCase()}` : "Select a course to begin";
-
+            const pill = document.getElementById('status-pill-container');
+            pill.innerHTML = userType ? `<div class="status-pill">${userType.toUpperCase()} ACCESS</div>` : "";
+            
+            document.getElementById('main-title').innerText = "X_Marsh Academy";
             const area = document.getElementById('content-area');
             area.innerHTML = `
                 <div class="category-grid">
-                    <div class="cat-card" onclick="checkAccess('editing')"><h2>VIDEO EDITING</h2></div>
-                    <div class="cat-card" onclick="checkAccess('trading')"><h2>TRADING</h2></div>
-                    <div class="cat-card" onclick="checkAccess('ai')"><h2>AI COURSE</h2></div>
-                    <div class="cat-card" onclick="checkAccess('youtube')"><h2>YT AUTOMATION</h2></div>
-                    <div class="cat-card" onclick="checkAccess('canva')"><h2>CANVA MASTER</h2></div>
+                    <div class="cat-card" onclick="handleEntry('editing')"><h2>EDITING</h2></div>
+                    <div class="cat-card" onclick="handleEntry('trading')"><h2>TRADING</h2></div>
+                    <div class="cat-card" onclick="handleEntry('ai')"><h2>AI COURSE</h2></div>
+                    <div class="cat-card" onclick="handleEntry('youtube')"><h2>YOUTUBE</h2></div>
+                    <div class="cat-card" onclick="handleEntry('canva')"><h2>CANVA</h2></div>
                 </div>
-                ${userType ? '<button class="logout-btn" onclick="logout()">Logout / Clear Session</button>' : ''}
+                ${userType === 'trial' ? `
+                    <div class="upgrade-banner" style="display:block; margin: 40px auto;">
+                        <h3 style="color:gold;">🌟 Upgrade to Premium</h3>
+                        <p>Unlock ALL videos for just <b>999 ETB</b></p>
+                        <button class="watch-btn" style="background:gold; color:black; width:auto; padding:10px 30px;" onclick="openUpgrade()">ENTER PREMIUM CODE</button>
+                    </div>
+                ` : ""}
             `;
         }
 
-        function checkAccess(key) {
-            const userType = localStorage.getItem('marsh_user_type');
-            if (userType) {
-                showCourse(key, userType);
-            } else {
-                window.currentCourseKey = key;
-                document.getElementById('code-modal').style.display = 'block';
-            }
+        function handleEntry(key) {
+            window.currentCourseKey = key;
+            const type = localStorage.getItem('marsh_user_type');
+            if(type) showCourse(key, type);
+            else document.getElementById('code-modal').style.display = 'block';
+        }
+
+        function openUpgrade() {
+            document.getElementById('modal-heading').innerText = "Upgrade to Premium";
+            document.getElementById('code-modal').style.display = 'block';
         }
 
         function validateCode() {
             const code = document.getElementById('code-input').value.trim().toLowerCase();
-            const usedCodes = JSON.parse(localStorage.getItem('used_codes') || '[]');
+            const used = JSON.parse(localStorage.getItem('used_codes') || '[]');
 
-            if (usedCodes.includes(code)) {
-                alert('This code has already been used by another user.');
-                return;
-            }
+            if(used.includes(code)) { alert("Code already used!"); return; }
 
-            let type = '';
-            if (trialCodes.includes(code)) type = 'trial';
-            else if (premiumCodes.includes(code)) type = 'premium';
-            else {
-                alert('Invalid Code.');
-                return;
-            }
+            let type = "";
+            if(premiumCodes.includes(code)) type = "premium";
+            else if(trialCodes.includes(code)) type = "trial";
+            else { alert("Invalid Code!"); return; }
 
-            // Save login session
             localStorage.setItem('marsh_user_type', type);
-            usedCodes.push(code);
-            localStorage.setItem('used_codes', JSON.stringify(usedCodes));
-
+            used.push(code);
+            localStorage.setItem('used_codes', JSON.stringify(used));
+            
             document.getElementById('code-modal').style.display = 'none';
             document.getElementById('surprise-modal').style.display = 'block';
         }
 
-        function chooseItem(emoji) {
-            document.getElementById('emoji-display').innerText = emoji;
-        }
-
-        function finishLogin() {
-            document.getElementById('surprise-modal').style.display = 'none';
-            showPricingPage();
-        }
-
-        function showPricingPage() {
-            const type = localStorage.getItem('marsh_user_type');
-            const area = document.getElementById('content-area');
-            const price = type === 'premium' ? "999 ETB" : "499 ETB";
-
-            area.innerHTML = `
-                <div class="pricing-card">
-                    <h2 style="color:var(--secondary)">${type.toUpperCase()} PLAN</h2>
-                    <p class="price">${price}</p>
-                    <p>Access Granted Successfully.</p>
-                    <button class="watch-btn" onclick="showCourse(window.currentCourseKey, '${type}')">Enter Course</button>
-                </div>
-            `;
+        function finishLogin(emoji) {
+            document.getElementById('emoji-result').innerText = emoji;
+            setTimeout(() => {
+                document.getElementById('surprise-modal').style.display = 'none';
+                showHome();
+            }, 1000);
         }
 
         function showCourse(key, type) {
             const course = courseData[key];
-            const isPremium = type === 'premium';
-            const videosToShow = isPremium ? course.videos : course.videos.slice(0, 2);
+            const isPrem = type === 'premium';
+            const vids = isPrem ? course.videos : course.videos.slice(0, 2);
 
             document.getElementById('main-title').innerText = course.title;
-            document.getElementById('status-label').innerText = isPremium ? "💎 PREMIUM MEMBER" : "🆓 TRIAL MEMBER";
-
             const area = document.getElementById('content-area');
-            let html = `<button class="back-btn" style="color:white; cursor:pointer;" onclick="showHome()">⬅ Back Home</button> <div class="grid">`;
+            let html = `<button class="watch-btn" style="width:auto; background:#333;" onclick="showHome()">⬅ Back</button> <div class="grid">`;
+            
+            vids.forEach((v, i) => {
+                html += `<div class="box"><h4>Module 0${i+1}</h4><h3>${v.name}</h3><a href="${v.url}" class="watch-btn">WATCH</a></div>`;
+            });
 
-            html += videosToShow.map((v, i) => `
-                <div class="box">
-                    <div class="module-label">MODULE 0${i + 1}</div>
-                    <h3>${v.name}</h3>
-                    <a href="${v.url}" target="_blank" class="watch-btn">WATCH NOW</a>
-                </div>
-            `).join('');
-
-            if (!isPremium) {
-                html += `
-                    <div class="box" style="opacity:0.5; border-style:dashed;">
-                        <div class="module-label">🔒 LOCKED</div>
-                        <h3>Premium Content</h3>
-                        <p>Upgrade to Premium (999 ETB) to unlock</p>
-                    </div>
-                `;
+            if(!isPrem) {
+                html += `<div class="box" style="border: 2px dashed #444; opacity:0.6;"><h4>🔒 LOCKED</h4><h3>Premium Lesson</h3><button class="watch-btn" onclick="openUpgrade()">UPGRADE (999 ETB)</button></div>`;
             }
-
-            html += `</div>`;
-            area.innerHTML = html;
+            area.innerHTML = html + `</div>`;
         }
 
         function showAbout() {
-            document.getElementById('main-title').innerText = "About X_Marsh";
             const area = document.getElementById('content-area');
-            area.innerHTML = `
-                <div class="about-section">
-                    <h2>Empowering the Next Generation</h2>
-                    <p style="margin:20px 0;">X_Marsh Academy is a leading digital training company based in Ethiopia. We specialize in teaching high-value skills like Video Editing, AI Automation, and Content Strategy.</p>
-                    <p>Our mission is to bridge the gap between passion and professional success by providing practical, easy-to-follow courses for ambitious creators.</p>
-                    <button class="watch-btn" onclick="showHome()" style="width:auto; margin-top:30px;">Return to Academy</button>
-                </div>
-            `;
+            area.innerHTML = `<div style="max-width:600px; margin:auto; background:var(--card-bg); padding:40px; border-radius:20px;">
+                <h2>About X_Marsh</h2>
+                <p>Ethiopia's leading digital skill academy. We help you master the creator economy.</p>
+                <p style="margin-top:20px;">Contact CEO: <a href="https://t.me/T4t4t2" class="tg-link">@T4t4t2</a></p>
+                <button class="watch-btn" onclick="showHome()">Back Home</button>
+            </div>`;
         }
 
         function closeModal() { document.getElementById('code-modal').style.display = 'none'; }
-
-        function logout() {
-            if (confirm("Do you want to logout? You will need a NEW code to get back in.")) {
-                localStorage.removeItem('marsh_user_type');
-                location.reload();
-            }
-        }
+        showHome();
     </script>
 </body>
-
 </html>
